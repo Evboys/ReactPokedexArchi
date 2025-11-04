@@ -30,7 +30,7 @@ export default function Search() {
       {!loading && !selectedPokemon && searchQuery && <p className="text-yellow-700">Aucun résultat</p>}
 
       {selectedPokemon && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 dark:bg-red-500">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <PokemonCard pokemon={selectedPokemon} />
         </div>
       )}
