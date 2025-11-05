@@ -23,8 +23,8 @@ export default function App() {
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
       <main className="max-w-5xl mx-auto p-4">
         <Routes>
-          <Route path="/" element={<Search />} />
-          <Route path="/favorites" element={<Favorites />} />
+          <Route path="ReactPokedexArchi/" element={<Search />} />
+          <Route path="ReactPokedexArchi/favorites" element={<Favorites />} />
         </Routes>
       </main>
     </div>

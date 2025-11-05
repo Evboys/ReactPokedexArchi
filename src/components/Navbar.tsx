@@ -14,15 +14,15 @@ export default function Navbar({ darkMode, setDarkMode }: Props) {
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="font-bold text-lg">
+        <Link to="ReactPokedexArchi/" className="font-bold text-lg">
           React Pokédex
         </Link>
         <div className="flex items-center gap-4">
-          <Link to="/" className={`${loc.pathname === "/" ? "underline" : ""}`}>
+          <Link to="ReactPokedexArchi/" className={`${loc.pathname === "/" ? "underline" : ""}`}>
             Search
           </Link>
           <Link
-            to="/favorites"
+            to="ReactPokedexArchi/favorites"
             className={`${loc.pathname === "/favorites" ? "underline" : ""}`}
           >
             Favorites ({favorites.length})
