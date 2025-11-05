@@ -4,6 +4,7 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 
 // Type Pokémon
@@ -31,20 +32,24 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Sauvegarder dans localStorage
+  
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const toggleFavorite = (pokemon: PokemonMinimal) => {
+ 
+  const toggleFavorite = useCallback((pokemon: PokemonMinimal) => {
     setFavorites((prev) =>
       prev.some((p) => p.pokedex_id === pokemon.pokedex_id)
         ? prev.filter((p) => p.pokedex_id !== pokemon.pokedex_id)
         : [...prev, pokemon]
     );
-  };
+  }, []);
 
-  const isFavorite = (id: number) => favorites.some((p) => p.pokedex_id === id);
+  const isFavorite = useCallback(
+    (id: number) => favorites.some((p) => p.pokedex_id === id),
+    [favorites]
+  );
 
   return (
     <FavoritesContext.Provider

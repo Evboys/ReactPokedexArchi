@@ -1,39 +1,45 @@
-import React, { useState, useEffect } from "react";
-import SearchBar from "../components/SearchBar";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import PokemonCard from "../components/PokemonCard";
 import { PokemonMinimal } from "../context/FavoritesContext";
-import { useFetch } from "../hooks/useFetch";
 
 export default function Search() {
-  const [searchQuery, setSearchQuery] = useState<string | null>(null);
-  const [selectedPokemon, setSelectedPokemon] = useState<PokemonMinimal | null>(null);
+  const [pokemons, setPokemons] = useState<PokemonMinimal[]>([]);
+  const [query, setQuery] = useState("");
 
-  // Fetch Pokémon par nom
-  const { data, loading, error } = useFetch<PokemonMinimal | { error?: string }>(
-    searchQuery ? `https://tyradex.vercel.app/api/v1/pokemon/${encodeURIComponent(searchQuery)}` : null
-  );
+  const inputRef = useRef<HTMLInputElement>(null); //Référence à l’input
 
   useEffect(() => {
-    if (data && !("error" in data)) {
-      setSelectedPokemon(data as PokemonMinimal);
-    } else {
-      setSelectedPokemon(null);
-    }
-  }, [data]);
+    fetch("https://tyradex.vercel.app/api/v1/pokemon")
+      .then((res) => res.json())
+      .then(setPokemons);
+  }, []);
+
+  //évite le recalcul de la liste filtrée
+  const filteredPokemons = useMemo(() => {
+    return pokemons.filter((p) =>
+      p.name.fr?.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [pokemons, query]);
+
+  //focus au montage
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
-    <div className="space-y-4 max-w-5xl mx-auto p-4">
-      <SearchBar onSelect={(name) => setSearchQuery(name)} />
-
-      {loading && <p>Chargement...</p>}
-      {error && <p className="text-red-600">Erreur: {error.message}</p>}
-      {!loading && !selectedPokemon && searchQuery && <p className="text-yellow-700">Aucun résultat</p>}
-
-      {selectedPokemon && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <PokemonCard pokemon={selectedPokemon} />
-        </div>
-      )}
+    <div>
+      <input
+        ref={inputRef}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Rechercher un Pokémon"
+        className="border p-2 rounded mb-4 w-full"
+      />
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredPokemons.map((p) => (
+          <PokemonCard key={p.pokedex_id} pokemon={p} />
+        ))}
+      </div>
     </div>
   );
 }
