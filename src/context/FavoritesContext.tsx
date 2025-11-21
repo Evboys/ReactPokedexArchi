@@ -37,7 +37,7 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
- 
+
   const toggleFavorite = useCallback((pokemon: PokemonMinimal) => {
     setFavorites((prev) =>
       prev.some((p) => p.pokedex_id === pokemon.pokedex_id)

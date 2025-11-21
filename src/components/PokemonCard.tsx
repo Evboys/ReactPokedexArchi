@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { PokemonMinimal, useFavorites } from "../context/FavoritesContext";
+import { useNavigate } from "react-router-dom";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
 type Props = { pokemon: PokemonMinimal };
@@ -8,6 +9,7 @@ type Props = { pokemon: PokemonMinimal };
 export default function PokemonCard({ pokemon }: Props) {
   const { toggleFavorite, isFavorite } = useFavorites();
   const fav = isFavorite(pokemon.pokedex_id);
+  const navigate = useNavigate();
 
   return (
     <motion.article
@@ -15,11 +17,15 @@ export default function PokemonCard({ pokemon }: Props) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      className="border rounded-xl shadow p-4 bg-white dark:bg-gray-800 flex flex-col items-center relative"
+      onClick={() => navigate(`/ReactPokedexArchi/pokemon/${pokemon.pokedex_id}`)}
+      className="border rounded-xl shadow p-4 bg-white dark:bg-gray-800 flex flex-col items-center relative cursor-pointer"
     >
       {/* Étoile Favoris */}
       <button
-        onClick={() => toggleFavorite(pokemon)}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleFavorite(pokemon);
+        }}
         className="absolute top-2 right-2 text-yellow-400 text-xl"
       >
         {fav ? <FaStar /> : <FaRegStar />}

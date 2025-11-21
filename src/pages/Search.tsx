@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import PokemonCard from "../components/PokemonCard";
 import { PokemonMinimal } from "../context/FavoritesContext";
+import { fetchAllPokemons } from "../api/pokemon";
 
 export default function Search() {
   const [pokemons, setPokemons] = useState<PokemonMinimal[]>([]);
@@ -9,9 +10,19 @@ export default function Search() {
   const inputRef = useRef<HTMLInputElement>(null); //Référence à l’input
 
   useEffect(() => {
-    fetch("https://tyradex.vercel.app/api/v1/pokemon")
-      .then((res) => res.json())
-      .then(setPokemons);
+    //fetcher la liste des pokémons au montage
+    let mounted = true;
+    fetchAllPokemons()
+      // En cas d'erreur, on vide la liste
+      .then((list) => {
+        if (mounted) setPokemons(list);
+      })
+      .catch(() => {
+        if (mounted) setPokemons([]);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   //évite le recalcul de la liste filtrée
