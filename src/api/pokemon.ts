@@ -6,28 +6,93 @@ export type PokemonMinimal = {
   sprites?: { regular?: string };
   types?: { name: string; image?: string }[];
 };
-//Récupérer la liste de tous les pokémons
+
+//Récupérer la liste complète
+
 export async function fetchAllPokemons(): Promise<PokemonMinimal[]> {
   const res = await fetch(BASE);
   if (!res.ok) throw new Error(`API ${res.status}`);
-  return (await res.json()) as PokemonMinimal[];
+  return await res.json();
 }
-//Récupérer un pokémon par son ID
+
+//Récupérer un Pokémon complet par ID
+
 export async function fetchPokemonById(id: string | number): Promise<any> {
   const res = await fetch(`${BASE}/${id}`);
   if (!res.ok) throw new Error(`API ${res.status}`);
-  return (await res.json()) as any;
+  return await res.json();
 }
 
-// Récupérer la chaîne d'évolution si l'endpoint existe. Retourne null en cas d'échec.
-export async function fetchEvolutions(id: string | number): Promise<any | null> {
-  try {
-    const res = await fetch(`${BASE}/${id}/evolution`);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+//Récupération évolutions (pré/next/mega)
+
+export async function fetchEvolutions(pokemon: any){
+  const forms: Array<{ name: string; sprites: any }> = [];
+  
+  //Pré-évolution
+  if (pokemon.evolution?.pre) {
+    try {
+      const pre = await fetchPokemonById(pokemon.evolution.pre);
+      forms.push({ name: "Pré-évolution", sprites: pre.sprites });
+    } catch {}
   }
+  //Next-évolution
+  if (pokemon.evolution?.next && Array.isArray(pokemon.evolution.next)) {
+    for (const nextId of pokemon.evolution.next) {
+      try {
+        const next = await fetchPokemonById(nextId);
+        forms.push({ name: "Next-évolution", sprites: next.sprites });
+      } catch {}
+    }
+  }
+
+  return forms;
 }
 
-export default { fetchAllPokemons, fetchPokemonById, fetchEvolutions };
+//Nouvelle fonction CLEAN qui extrait toutes les formes
+export function extractForms(pokemon: any) {
+  const forms: Array<{ name: string; sprites: any }> = [];
+
+  //MEGA via evolution.mega
+  if (pokemon.evolution?.mega && Array.isArray(pokemon.evolution.mega)) {
+    pokemon.evolution.mega.forEach((m: any) => {
+      forms.push({
+        name: m.orbe ?? m.name ?? "Méga-évolution",
+        sprites: m.sprites,
+      });
+    });
+  }
+
+  //MEGA via sprites.mega.x / y
+  const megaFromSprites = pokemon.sprites?.mega;
+  if (megaFromSprites) {
+    if (megaFromSprites.x) {
+      forms.push({
+        name: `${pokemon.name.fr} (Méga X)`,
+        sprites: megaFromSprites.x,
+      });
+    }
+    if (megaFromSprites.y) {
+      forms.push({
+        name: `${pokemon.name.fr} (Méga Y)`,
+        sprites: megaFromSprites.y,
+      });
+    }
+  }
+
+  //GIGAMAX
+  if (pokemon.sprites?.gmax) {
+    forms.push({
+      name: `${pokemon.name.fr} (Gigamax)`,
+      sprites: pokemon.sprites.gmax,
+    });
+  }
+
+  return forms;
+}
+
+export default {
+  fetchAllPokemons,
+  fetchPokemonById,
+  fetchEvolutions,
+  extractForms,
+};

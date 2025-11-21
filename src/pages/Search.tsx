@@ -6,6 +6,8 @@ import { fetchAllPokemons } from "../api/pokemon";
 export default function Search() {
   const [pokemons, setPokemons] = useState<PokemonMinimal[]>([]);
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 1026;
 
   const inputRef = useRef<HTMLInputElement>(null); //Référence à l’input
 
@@ -32,6 +34,17 @@ export default function Search() {
     );
   }, [pokemons, query]);
 
+  // Reset la page à 1 à chaque changement de requête
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredPokemons.length / pageSize));
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredPokemons.slice(start, start + pageSize);
+  }, [filteredPokemons, page]);
+
   //focus au montage
   useEffect(() => {
     inputRef.current?.focus();
@@ -47,9 +60,31 @@ export default function Search() {
         className="border p-2 rounded mb-4 w-full"
       />
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredPokemons.map((p) => (
+        {paginated.map((p) => (
           <PokemonCard key={p.pokedex_id} pokemon={p} />
         ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-center gap-3">
+        <button
+          onClick={() => setPage((s) => Math.max(1, s - 1))}
+          disabled={page === 1}
+          className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
+        >
+          Précédent
+        </button>
+
+        <div className="text-sm">
+          Page {page} / {pageCount} ({filteredPokemons.length} résultats)
+        </div>
+
+        <button
+          onClick={() => setPage((s) => Math.min(pageCount, s + 1))}
+          disabled={page === pageCount}
+          className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
+        >
+          Suivant
+        </button>
       </div>
     </div>
   );
