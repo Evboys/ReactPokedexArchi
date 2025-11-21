@@ -7,7 +7,7 @@ export default function Search() {
   const [pokemons, setPokemons] = useState<PokemonMinimal[]>([]);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 1026;
+  const pageSize = 10;
 
   const inputRef = useRef<HTMLInputElement>(null); //Référence à l’input
 
