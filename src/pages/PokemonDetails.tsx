@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { FaStar, FaRegStar } from "react-icons/fa";
 import {
   fetchPokemonById,
   fetchEvolutions,
   extractForms,
 } from "../api/pokemon";
+import { useFavorites } from "../context/FavoritesContext";
 import PokemonDetailsHeader from "../components/PokemonDetailsHeader";
 import PokemonTypes from "../components/PokemonTypes";
 import PokemonStats from "../components/PokemonStats";
@@ -173,6 +175,9 @@ export default function PokemonDetails() {
 
   const imageSrc = getSprite(shiny);
 
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const fav = isFavorite(numericId);
+
   // Filtrer les forms pour n'afficher que les formes alternatives (méga/gigamax/formes différentes)
   const baseNameLower = getName(data.name).toLowerCase();
 
@@ -191,13 +196,28 @@ export default function PokemonDetails() {
 
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-      <PokemonDetailsHeader
-        displayName={displayName}
-        numericId={numericId}
-        imageSrc={imageSrc}
-        prevId={prevId}
-        nextId={nextId}
-      />
+      <div className="flex justify-between flex-col">
+        <PokemonDetailsHeader
+          displayName={displayName}
+          numericId={numericId}
+          imageSrc={imageSrc}
+          prevId={prevId}
+          nextId={nextId}
+        />
+        <button
+          onClick={() =>
+            toggleFavorite({
+              pokedex_id: numericId,
+              name: { fr: displayName },
+              sprites: { regular: imageSrc },
+            })
+          }
+          className="text-2xl text-yellow-400 hover:opacity-80 transition"
+          title={fav ? "Supprimer des favoris" : "Ajouter aux favoris"}
+        >
+          {fav ? <FaStar /> : <FaRegStar />}
+        </button>
+      </div>
 
       <div className="mt-4">
         {/* Toggle Normal / Shiny */}
