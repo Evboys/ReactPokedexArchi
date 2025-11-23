@@ -25,9 +25,9 @@ export async function fetchPokemonById(id: string | number): Promise<any> {
 
 //Récupération évolutions (pré/next/mega)
 
-export async function fetchEvolutions(pokemon: any){
+export async function fetchEvolutions(pokemon: any) {
   const forms: Array<{ name: string; sprites: any }> = [];
-  
+
   //Pré-évolution
   if (pokemon.evolution?.pre) {
     try {
@@ -48,11 +48,10 @@ export async function fetchEvolutions(pokemon: any){
   return forms;
 }
 
-//Nouvelle fonction CLEAN qui extrait toutes les formes
 export function extractForms(pokemon: any) {
   const forms: Array<{ name: string; sprites: any }> = [];
 
-  //MEGA via evolution.mega
+  //Mega par evolution.mega
   if (pokemon.evolution?.mega && Array.isArray(pokemon.evolution.mega)) {
     pokemon.evolution.mega.forEach((m: any) => {
       forms.push({
@@ -62,7 +61,7 @@ export function extractForms(pokemon: any) {
     });
   }
 
-  //MEGA via sprites.mega.x / y
+  //Mega X/Y par les sprites.mega.x/y
   const megaFromSprites = pokemon.sprites?.mega;
   if (megaFromSprites) {
     if (megaFromSprites.x) {

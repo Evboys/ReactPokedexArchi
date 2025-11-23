@@ -29,12 +29,14 @@ export default function Search() {
 
   //évite le recalcul de la liste filtrée
   const filteredPokemons = useMemo(() => {
-    return pokemons.filter((p) =>
-      p.name.fr?.toLowerCase().includes(query.toLowerCase())
-    );
+    const q = query.trim().toLowerCase();
+    if (!q) return pokemons;
+    return pokemons.filter((p) => {
+      const nameStr = (p.name?.fr ?? p.name?.en ?? "").toLowerCase();
+      return nameStr.includes(q);
+    });
   }, [pokemons, query]);
 
-  // Reset la page à 1 à chaque changement de requête
   useEffect(() => {
     setPage(1);
   }, [query]);
@@ -57,7 +59,7 @@ export default function Search() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Rechercher un Pokémon"
-        className="border p-2 rounded mb-4 w-full"
+        className="border p-2 rounded mb-4 w-full text-black"
       />
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {paginated.map((p) => (

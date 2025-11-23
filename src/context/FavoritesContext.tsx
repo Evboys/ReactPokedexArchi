@@ -11,7 +11,7 @@ import React, {
 export type PokemonMinimal = {
   pokedex_id: number;
   name: { fr?: string; en?: string };
-  sprites?: { regular?: string };
+  sprites?: { regular?: string ; shiny?: string } ;
   types?: { name: string; image?: string }[];
 };
 

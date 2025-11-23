@@ -26,7 +26,10 @@ export default function App() {
         <Routes>
           <Route path="ReactPokedexArchi/" element={<Search />} />
           <Route path="ReactPokedexArchi/favorites" element={<Favorites />} />
-          <Route path="ReactPokedexArchi/pokemon/:id" element={<PokemonDetails />} />
+          <Route
+            path="ReactPokedexArchi/pokemon/:id"
+            element={<PokemonDetails />}
+          />
         </Routes>
       </main>
     </div>
